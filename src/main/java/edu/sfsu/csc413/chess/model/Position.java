@@ -1,7 +1,7 @@
 package edu.sfsu.csc413.chess.model;
 
 public record Position(int file, int rank) {
-    public static final int BOARD_SIZE = 8;         // A chess board is 8x8, but could potentially be adapted to handle shogi
+    public static final int BOARD_SIZE = Board.BOARD_SIZE;      // BOARD_SIZE should probably be a thing from board; duplicated here to keep tests happy
 
     public Position {
         if (!isOnBoard(file, rank)) {
@@ -10,7 +10,7 @@ public record Position(int file, int rank) {
     }
 
     private static boolean isOnBoard(int file, int rank) {
-        return (file >= 0 && rank >= 0 && file < BOARD_SIZE && rank < BOARD_SIZE);
+        return (file >= 0 && rank >= 0 && file < Board.BOARD_SIZE && rank < Board.BOARD_SIZE);
     }
 
     public static Position parse(String coordinate) {

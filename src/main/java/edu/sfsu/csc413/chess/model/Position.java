@@ -26,7 +26,7 @@ public record Position(int file, int rank) {
         int coordRank = coordinate.charAt(1) - '1';
 
         if (!isOnBoard(coordFile, coordRank)) {
-            throw new IllegalArgumentException("Invalid Position: Position lies off of the board" + coordinate);
+            throw new IllegalArgumentException("Invalid Position: Position lies off of the board " + coordinate);
         }
 
         return new Position(coordFile, coordRank);

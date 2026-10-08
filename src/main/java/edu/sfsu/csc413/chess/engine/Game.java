@@ -4,6 +4,8 @@ import edu.sfsu.csc413.chess.factory.BoardFactory;
 import edu.sfsu.csc413.chess.model.Board;
 import edu.sfsu.csc413.chess.model.Color;
 import edu.sfsu.csc413.chess.model.Move;
+import edu.sfsu.csc413.chess.model.Position;
+import edu.sfsu.csc413.chess.model.PieceType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +24,8 @@ import java.util.Optional;
  * and a side to move, and it owns all three. Nothing else holds them.
  */
 public class Game {
-
     private final Board board;
-
     private final List<Move> history = new ArrayList<>();
-
     private Color sideToMove;
 
     /**
@@ -45,11 +44,11 @@ public class Game {
     }
 
     public Board board() {
-        throw new UnsupportedOperationException("M3: implement Game.board");
+        return this.board;
     }
 
     public Color sideToMove() {
-        throw new UnsupportedOperationException("M3: implement Game.sideToMove");
+        return this.sideToMove;
     }
 
     /**
@@ -59,7 +58,7 @@ public class Game {
      * out would let any caller rewrite the game's past.
      */
     public List<Move> history() {
-        throw new UnsupportedOperationException("M3: implement Game.history");
+        return List.copyOf(history);
     }
 
     /**
@@ -71,7 +70,11 @@ public class Game {
      * or its callers.
      */
     public List<Move> legalMoves() {
-        throw new UnsupportedOperationException("M3: implement Game.legalMoves");
+        ArrayList<Move> legalMoves = new ArrayList<>();
+        for (Position pieceSquare : this.board.positionsOf(this.sideToMove)) {
+            legalMoves.addAll(this.board.pieceAt(pieceSquare).pseudoLegalMoves(board, pieceSquare));
+        }
+        return legalMoves;
     }
 
     /**
@@ -84,7 +87,13 @@ public class Game {
      * with that case.
      */
     public Optional<Move> findLegalMove(String notation) {
-        throw new UnsupportedOperationException("M3: implement Game.findLegalMove");
+        for (Move move : this.legalMoves()) {
+            if (move.toString().equals(notation)) {
+                return Optional.of(move);
+            }
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -95,7 +104,14 @@ public class Game {
      *         {@link #legalMoves()}
      */
     public void play(Move move) {
-        throw new UnsupportedOperationException("M3: implement Game.play");
+        List<Move> legalMoves = this.legalMoves();
+        if (!legalMoves.contains(move)) {
+            throw new IllegalArgumentException("Move " + move.toString() + " is not a legal move");
+        }
+
+        this.board.apply(move);
+        this.history.add(move);
+        this.sideToMove = this.sideToMove.opposite();
     }
 
     /**
@@ -105,6 +121,13 @@ public class Game {
      * was captured. In Week 10 this becomes the Command pattern proper.
      */
     public Optional<Move> undoLastMove() {
-        throw new UnsupportedOperationException("M3: implement Game.undoLastMove");
+        if (this.history.size() == 0) {
+            return Optional.empty();
+        }
+
+        Move lastMove = this.history.removeLast();
+        this.board.undo(lastMove);
+        this.sideToMove = this.sideToMove.opposite();
+        return Optional.of(lastMove);
     }
 }

@@ -7,26 +7,15 @@ public class Board {
     public static final int BOARD_SIZE = 8;     // A chess board is 8x8, but could potentially be adapted to handle shogi
     private Piece[][] pieces;                   // (file, rank) from (0, 0) = a1 to (7, 7) = h8
 
+    // Constructors
     public Board() {
         this.pieces = new Piece[BOARD_SIZE][BOARD_SIZE];
     }
 
+    // Getters
     public Piece pieceAt(Position square) {
         // Position already enforces a valid square on the board, thus we don't have to check for it
         return this.pieces[square.file()][square.rank()];
-    }
-
-    public boolean isEmpty(Position square) {
-        // Position already enforces a valid square on the board, thus we don't have to check for it
-        return this.pieces[square.file()][square.rank()] == null;
-    }
-
-    public void place(Position square, Piece piece) {
-        try {
-            this.pieces[square.file()][square.rank()] = piece;
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid Position or Piece", e);
-        }
     }
 
     public List<Position> positionsOf(Color pieceColor) {
@@ -43,6 +32,64 @@ public class Board {
         return colorPositions;
     }
 
+    // Setters
+    public void place(Position square, Piece piece) {
+        try {
+            this.pieces[square.file()][square.rank()] = piece;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid Position or Piece", e);
+        }
+    }
+
+    // Other Functions
+    /**
+     * Checks if a given board position doesn't have a piece on it.
+     */
+    public boolean isEmpty(Position square) {
+        // Position already enforces a valid square on the board, thus we don't have to check for it
+        return this.pieces[square.file()][square.rank()] == null;
+    }
+
+    /**
+     * Given a move, it applies whatever the move says happened.
+     * Checks if the given move was a promotion.
+     * If it was a capture, the piece simply no longer exists on the board.
+     * Trusts that the given Move is valid.
+     */
+    public void apply(Move move) {
+        Piece pieceMoved;
+        // Boolean check for promotion over using default to avoid checking the entire switch on every move
+        if (move.isPromotion()) {
+            // Ordered from most to least likely to be promoted to for minor performance increase
+            switch(move.promotesTo()) {
+                case PieceType.QUEEN -> pieceMoved = new Queen(move.moved().color());
+                case PieceType.ROOK -> pieceMoved = new Rook(move.moved().color());
+                case PieceType.BISHOP -> pieceMoved = new Bishop(move.moved().color());
+                case PieceType.KNIGHT -> pieceMoved = new Knight(move.moved().color());
+                // Redundant because if isPromotion() is true, promotesTo() will never be a King or Pawn
+                default -> pieceMoved = null;
+            }
+        } else {
+            pieceMoved = move.moved();
+        }
+        this.pieces[move.to().file()][move.to().rank()] = pieceMoved;
+        this.pieces[move.from().file()][move.from().rank()] = null;
+    }
+
+    /**
+     * Undoes the given move whether it was a promotion, attack, or a regular move.
+     * If it was an attack, places the captured piece back.
+     */
+    public void undo(Move move) {
+        this.pieces[move.from().file()][move.from().rank()] = move.moved();
+        if (move.isCapture()) {
+            this.pieces[move.to().file()][move.to().rank()] = move.captured();
+        } else {
+            this.pieces[move.to().file()][move.to().rank()] = null;
+        }
+    }
+
+    // Overriden Functions
     @Override
     public String toString() {
         String FENString = "";

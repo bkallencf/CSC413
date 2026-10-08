@@ -3,6 +3,7 @@ package edu.sfsu.csc413.chess;
 import edu.sfsu.csc413.chess.model.*;
 import edu.sfsu.csc413.chess.view.*;
 import edu.sfsu.csc413.chess.factory.*;
+import edu.sfsu.csc413.chess.engine.*;
 
 /**
  * Entry point.
@@ -13,10 +14,18 @@ import edu.sfsu.csc413.chess.factory.*;
 public final class Main {
 
     public static void main(String[] args) {
-        System.out.println("CSC 413 Chess — environment OK.");
-        
-        Board board = BoardFactory.standard();
-        System.out.println(new TextBoardRenderer(PieceGlyphs.LETTERS).render(board));
+        Game chess = new Game();
+        TextBoardRenderer renderer = new TextBoardRenderer(PieceGlyphs.LETTERS);
+        System.out.println(renderer.render(chess.board()));
+        System.out.println();
+
+        chess.play(chess.findLegalMove("e2e4").orElseThrow());
+        System.out.println(renderer.render(chess.board()));
+        System.out.println();
+
+        chess.play(chess.findLegalMove("e7e5").orElseThrow());
+        System.out.println(renderer.render(chess.board()));
+        System.out.println();
     }
 
     private Main() {

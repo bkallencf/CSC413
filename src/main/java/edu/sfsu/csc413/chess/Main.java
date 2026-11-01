@@ -19,13 +19,13 @@ public final class Main {
         System.out.println(renderer.render(chess.board()));
         System.out.println();
 
-        chess.play(chess.findLegalMove("e2e4").orElseThrow());
-        System.out.println(renderer.render(chess.board()));
-        System.out.println();
-
-        chess.play(chess.findLegalMove("e7e5").orElseThrow());
-        System.out.println(renderer.render(chess.board()));
-        System.out.println();
+        String[] moves = {"f2f3", "e7e5", "g2g4", "d8h4"};
+        for (String notation : moves) {
+            chess.play(chess.findLegalMove(notation).orElseThrow());
+            System.out.println(renderer.render(chess.board()));
+            System.out.println();
+        }
+        System.out.println(chess.legalMoves());
     }
 
     private Main() {

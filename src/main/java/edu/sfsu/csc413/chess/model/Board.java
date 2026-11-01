@@ -32,6 +32,23 @@ public class Board {
         return colorPositions;
     }
 
+    /** 
+     * Returns the position on the board of the king of the given color.
+     */
+    public Position kingPosition(Color color) {
+        for (int i = 0; i < pieces.length; i++) {
+            for (int j = 0; j < pieces[0].length; j++) {
+                if (pieces[i][j] == null) {
+                    continue;
+                }
+                if (pieces[i][j].type() == PieceType.KING && pieces[i][j].color() == color) {
+                    return new Position(i, j);
+                }
+            }
+        }
+        return null;
+    }
+
     // Setters
     public void place(Position square, Piece piece) {
         try {

@@ -79,3 +79,38 @@ Color : Color opposite()
 Color : int pawnDirection()
 Color : int pawnStartRank()
 Color : int promotionRank()
+
+sequenceDiagram
+    participant Game
+    participant MoveGenerator
+    participant Board
+    participant Color
+    participant Piece
+    Game->>MoveGenerator:legalMoves(board, sideToMove)
+    MoveGenerator->>MoveGenerator:pseudoLegalMoves(board, color)
+    MoveGenerator->>Board:positionsOf(color)
+    Board-->>MoveGenerator:colorPositions
+    MoveGenerator-->>MoveGenerator:legalMoves
+    MoveGenerator->>Board:apply(move)
+    Board-->>MoveGenerator:return
+    MoveGenerator->>MoveGenerator:isInCheck(board, color)
+    MoveGenerator->>Board:kingPosition(color)
+    Board-->>MoveGenerator:kingPosition
+    MoveGenerator->>Color:opposite()
+    Color-->>MoveGenerator:oppositeColor
+    MoveGenerator->>MoveGenerator:isAttacked(board, kingPosition, oppositeColor)
+    MoveGenerator->>Board:pieceAt(attackerSquare)
+    Board-->>MoveGenerator:attackingPiece
+    MoveGenerator->>Piece:attacks(board, attackerSquare, target)
+    Piece->>Board:pieceAt(from)
+    Board-->>Piece:piece
+    Piece->>Piece:pseudoLegalMoves(board, from)
+    alt attacks
+        Piece-->>MoveGenerator:true
+    else
+        Piece-->>MoveGenerator:false
+        MoveGenerator-->>MoveGenerator:legalMoves.add(move)
+    end
+    MoveGenerator->>Board:undo(move)
+    Board-->>MoveGenerator:return
+    MoveGenerator-->>Game:legalMoves

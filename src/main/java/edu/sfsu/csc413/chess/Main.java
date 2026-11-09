@@ -5,6 +5,8 @@ import edu.sfsu.csc413.chess.view.*;
 import edu.sfsu.csc413.chess.factory.*;
 import edu.sfsu.csc413.chess.engine.*;
 
+import java.util.Scanner;
+
 /**
  * Entry point.
  *
@@ -15,17 +17,17 @@ public final class Main {
 
     public static void main(String[] args) {
         Game chess = new Game();
-        TextBoardRenderer renderer = new TextBoardRenderer(PieceGlyphs.LETTERS);
-        System.out.println(renderer.render(chess.board()));
-        System.out.println();
+        System.out.print("Choose a view (emoji, console): ");
+        Scanner in = new Scanner(System.in);
 
-        String[] moves = {"f2f3", "e7e5", "g2g4", "d8h4"};
-        for (String notation : moves) {
-            chess.play(chess.findLegalMove(notation).orElseThrow());
-            System.out.println(renderer.render(chess.board()));
-            System.out.println();
+        BoardView view;
+        switch(in.nextLine()) {
+            case "emoji" -> { view = new EmojiView(); }
+            case "console" -> { view = new ConsoleView(); }
+            default -> { view = new ConsoleView(); }
         }
-        System.out.println(chess.legalMoves());
+
+        new GameController(chess, view).start();
     }
 
     private Main() {

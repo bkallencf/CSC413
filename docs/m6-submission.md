@@ -1,0 +1,5 @@
+1. MoveGenerator detects the current status of the game, including whether or not checkmate has occurred. Game then takes this from MoveGenerator. Finally, GameController announces when the game has ended in a checkmate.
+
+2. Here, only Main imports view. Model must not import view or any other package because it holds the actual representations which view depends on.
+
+3. I don't expect much to change when the Swing view is added. The Swing view would have to implement start(), nextAction(), render(),showAction(), and close() on its own, but I don't think the current implementation of GameController will have to change so much since it already assumes any kind of BoardView without worrying about actual implementation. Game works off of the model anyways, and a Swing view would just be a way of representing it, without changing the model.

@@ -1,6 +1,12 @@
 package edu.sfsu.csc413.chess.view;
 
 import edu.sfsu.csc413.chess.engine.Game;
+import edu.sfsu.csc413.chess.engine.GameStatus;
+import edu.sfsu.csc413.chess.model.Move;
+import edu.sfsu.csc413.chess.model.PieceType;
+
+import java.util.Optional;
+import java.util.List;
 
 /**
  * Connects the player's decisions to the game: carry out what was asked, then
@@ -35,7 +41,9 @@ public class GameController {
      * view with {@link BoardView#start}.
      */
     public void start() {
-        throw new UnsupportedOperationException("M6: implement GameController.start");
+        view.showMessage("Welcome to CSC 413 Chess Engine.");
+        view.render(game);
+        view.start(this);
     }
 
     /**
@@ -46,7 +54,19 @@ public class GameController {
      * {@code start}; an event-driven view never calls it.
      */
     public void runLoop() {
-        throw new UnsupportedOperationException("M6: implement GameController.runLoop");
+        PlayerAction nextAction = this.view.nextAction(game);
+        while (nextAction != null && !nextAction.equals(new PlayerAction.Quit())) {
+            this.handle(nextAction);
+            // Exits prematurely if the game is ended
+            if (this.game.isGameOver()) {
+                break;
+            }
+
+            // Get the players next action and continue
+            nextAction = this.view.nextAction(game);
+        }
+        // Handles the final quit action
+        this.handle(new PlayerAction.Quit());
     }
 
     /**
@@ -57,6 +77,69 @@ public class GameController {
      * each of the four actions does and what the player is told.
      */
     public void handle(PlayerAction action) {
-        throw new UnsupportedOperationException("M6: implement GameController.handle");
+        switch (action) {
+            // Lets the player undo their move
+            case PlayerAction.Undo Undo -> {
+                Optional<Move> move = game.undoLastMove();
+                if (move.isEmpty()) {
+                    this.view.showMessage("Nothing to undo.");
+                }
+            }
+            // Lists the moves available to the player
+            case PlayerAction.ShowMoves ShowMoves -> {
+                List<Move> availableMoves = this.game.legalMoves();
+                String message = availableMoves.size() + "legal moves:";
+                for (Move legalMove : availableMoves) {
+                    message += legalMove.toString() + " ";
+                }
+                this.view.showMessage(message);
+            }
+            // Does the players move
+            case PlayerAction.Move Move -> {
+                PlayerAction.Move nextMove = (PlayerAction.Move) action;
+                List<Move> legalMoves = this.game.legalMoves();
+                boolean legal = false;
+                for (Move move : legalMoves) {
+                    if (move.toString().substring(0, 4).equals(nextMove.notation().substring(0, 4))) {
+                        Move doMove = move;
+                        if (move.isPromotion()) {
+                            char promotesTo = (nextMove.notation().length() == 5) ? nextMove.notation().charAt(4) : ' ';
+                            PieceType promotion;
+                            switch (Character.toLowerCase(promotesTo)) {
+                                case 'n' -> { promotion = PieceType.KNIGHT; }
+                                case 'b' -> { promotion = PieceType.BISHOP; }
+                                case 'r' -> { promotion = PieceType.ROOK; }
+                                case 'q' -> { promotion = PieceType.QUEEN; }
+                                default -> { promotion = this.view.promotionChoice(this.game); }
+                            }
+                            doMove = edu.sfsu.csc413.chess.model.Move.promotion(move.from(), move.to(), move.moved(), move.captured(), promotion);
+                        }
+                        
+                        this.game.play(doMove);
+                        legal = true;
+                        break;
+                    }
+                }
+                
+                if (!legal) {
+                    this.view.showMessage("Not a legal move: '" + nextMove.notation() + "'.");
+                }
+            }
+            // Quit the game
+            case PlayerAction.Quit Quit -> {
+                this.view.showMessage("Goodbye.");
+                this.view.close();
+                return;
+            }
+        }
+
+        this.view.render(this.game);
+        if (this.game.isGameOver()) {
+            if (this.game.status() == GameStatus.CHECKMATE) {
+                this.view.showMessage("Checkmate. " + this.game.sideToMove().opposite() + " wins.");
+            } else {
+                this.view.showMessage("Stalemate. The game is a draw.");
+            }
+        }
     }
 }

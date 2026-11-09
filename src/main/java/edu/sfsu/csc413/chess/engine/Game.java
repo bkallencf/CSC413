@@ -124,4 +124,19 @@ public class Game {
         this.sideToMove = this.sideToMove.opposite();
         return Optional.of(lastMove);
     }
+
+    /**
+     * Returns the current GameStatus, whether it's in progress, the current player is in check,
+     * or if the game is over via stalemate or checkmate.
+     */
+    public GameStatus status() {
+        return MoveGenerator.status(board, sideToMove);
+    }
+
+    /**
+     * Checks if the game has ended via stalemate or checkmate.
+     */
+    public boolean isGameOver() {
+        return this.status().isGameOver();
+    }
 }

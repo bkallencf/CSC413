@@ -94,4 +94,23 @@ public final class MoveGenerator {
     public static boolean isInCheck(Board board, Color color) {
         return MoveGenerator.isAttacked(board, board.kingPosition(color), color.opposite());
     }
+
+    /**
+     * Checks if the game is still ongoing, one side is in check, or if the game has
+     * ended via checkmate or stalemate
+     */
+    public static GameStatus status(Board board, Color color) {
+        boolean cantMove = MoveGenerator.legalMoves(board, color).isEmpty();
+        if (MoveGenerator.isInCheck(board, color)) {
+            if (cantMove) {
+                return GameStatus.CHECKMATE;
+            } else {
+                return GameStatus.CHECK;
+            }
+        } else if (cantMove) {
+            return GameStatus.STALEMATE;
+        } else {
+            return GameStatus.IN_PROGRESS;
+        }
+    }
 }

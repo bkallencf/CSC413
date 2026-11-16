@@ -62,7 +62,7 @@ public class Pawn extends Piece {
         try {
             Position leftAttack = new Position(from.file() - 1, from.rank() + this.color().pawnDirection());
             if (board.pieceAt(leftAttack) != null && board.pieceAt(leftAttack).color() != this.color()) {
-                if (leftAttack.rank() == this.color().pawnDirection()) {
+                if (leftAttack.rank() == this.color().promotionRank()) {
                     Pawn.addPromotionMoves(moves, board, from, leftAttack);
                 } else {
                     moves.add(Move.capture(from, leftAttack, board.pieceAt(from), board.pieceAt(leftAttack)));
@@ -72,9 +72,9 @@ public class Pawn extends Piece {
 
         // Attack to the right, relative to white
         try {
-            Position rightAttack = new Position(from.file() + 1, this.color().pawnDirection());
+            Position rightAttack = new Position(from.file() + 1, from.rank() + this.color().pawnDirection());
             if (board.pieceAt(rightAttack) != null && board.pieceAt(rightAttack).color() != this.color()) {
-                if (rightAttack.rank() == this.color().pawnDirection()) {
+                if (rightAttack.rank() == this.color().promotionRank()) {
                     Pawn.addPromotionMoves(moves, board, from, rightAttack);
                 } else {
                     moves.add(Move.capture(from, rightAttack, board.pieceAt(from), board.pieceAt(rightAttack)));

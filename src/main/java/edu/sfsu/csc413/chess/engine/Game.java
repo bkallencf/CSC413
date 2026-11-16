@@ -2,6 +2,7 @@ package edu.sfsu.csc413.chess.engine;
 
 import edu.sfsu.csc413.chess.factory.BoardFactory;
 import edu.sfsu.csc413.chess.model.Board;
+import edu.sfsu.csc413.chess.model.Position;
 import edu.sfsu.csc413.chess.model.Color;
 import edu.sfsu.csc413.chess.model.Move;
 
@@ -69,6 +70,20 @@ public class Game {
      */
     public List<Move> legalMoves() {
         return MoveGenerator.legalMoves(this.board, this.sideToMove);
+    }
+
+    /**
+     * Returns all the legal moves for a given piece in a square
+     */
+    public List<Move> pieceLegalMoves(Position square) {
+        List<Move> allLegalMoves = this.legalMoves();
+        List<Move> pieceLegalMoves = new ArrayList<>();
+        for (Move move : allLegalMoves) {
+            if (move.from().equals(square)) {
+                pieceLegalMoves.add(move);
+            }
+        }
+        return pieceLegalMoves;
     }
 
     /**

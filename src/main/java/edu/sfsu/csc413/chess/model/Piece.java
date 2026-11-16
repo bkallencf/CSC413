@@ -46,7 +46,7 @@ public abstract class Piece {
     protected List<Move> slidingMoves(Board board, Position from, int[][] directions) {
         ArrayList<Move> moves = new ArrayList<>();
         for (int[] direction : directions) {
-            int i = 0;
+            int i = 1;
             // Will go until it runs off the board
             try {
                 Position to = new Position(from.file() + direction[0], from.rank() + direction[1]);

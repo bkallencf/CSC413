@@ -17,14 +17,15 @@ public final class Main {
 
     public static void main(String[] args) {
         Game chess = new Game();
-        System.out.print("Choose a view (emoji, console, swing): ");
+        System.out.print("Choose a view (emoji, console, swing, pgn): ");
         Scanner in = new Scanner(System.in);
 
         BoardView view;
         switch(in.nextLine()) {
             case "emoji" -> { view = new EmojiView(); }
             case "console" -> { view = new ConsoleView(); }
-            case "swing" -> { view = new SwingView(Color.BLACK); }
+            case "swing" -> { view = new SwingView(); }
+            case "pgn" -> { view = new PGNView(); }
             default -> { view = new ConsoleView(); }
         }
 

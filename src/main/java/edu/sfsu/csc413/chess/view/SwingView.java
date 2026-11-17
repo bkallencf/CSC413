@@ -151,6 +151,7 @@ public class SwingView implements BoardView {
     }
 
     public void askPromotion() {
+        // Stack Overflow: https://stackoverflow.com/questions/2405039/pop-up-window-in-java-swing
         JDialog promotionWindow = new JDialog(this.frame, "Promotion!", true);
         promotionWindow.setSize(400, 100);
         promotionWindow.setLayout(new FlowLayout());

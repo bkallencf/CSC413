@@ -100,6 +100,9 @@ public class GameController {
                 List<Move> legalMoves = this.game.legalMoves();
                 boolean legal = false;
                 for (Move move : legalMoves) {
+                    if (nextMove.notation().length() < 4) {
+                        break;
+                    }
                     if (move.toString().substring(0, 4).equals(nextMove.notation().substring(0, 4))) {
                         Move doMove = move;
                         if (move.isPromotion()) {
